@@ -1,10 +1,11 @@
 import { verifyKey } from 'discord-interactions'
 import { image } from '@/lib/image'
 import { get } from '@vercel/edge-config'
+import * as marry from './commands/marry'
 import * as promotion from './commands/promotion'
 import * as shito from './commands/shito'
 
-const commands = [promotion, shito]
+const commands = [marry, promotion, shito]
 
 export const POST = async (req: Request) => {
   const signature = req.headers.get('x-signature-ed25519')

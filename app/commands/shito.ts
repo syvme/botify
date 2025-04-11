@@ -1,5 +1,6 @@
 import sharp from 'sharp'
-import { image } from '@/lib/image'
+import getAvatar from '@/lib/getAvatar'
+import image from '@/lib/image'
 
 export const data = {
   name: 'shito',
@@ -19,7 +20,7 @@ export const data = {
 export const command = async (i: any) => {
   const user = i.data.resolved.users[i.data.options[0].value]
 
-  const avatar = await (await fetch(`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=56`)).arrayBuffer()
+  const avatar = await getAvatar(user, 56)
   const one_6ez = await (await fetch(`${process.env.BASE_URL}/one_6ez.png`)).arrayBuffer()
   const finalImage = await sharp(Buffer.from(one_6ez))
     .composite([
