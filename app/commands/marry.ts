@@ -20,13 +20,14 @@ export const data = {
 export const command = async (i: any) => {
   const groom = i.user || i.member.user
   const bride = i.data.resolved.users[i.data.options[0].value]
+
+  if (groom.id === bride.id) return { type: 4, data: { content: "You can't marry yourself.", flags: 64 } }
   const wedding = await (await fetch(`${process.env.BASE_URL}/wedding.png`)).arrayBuffer()
 
   const finalImage = await sharp(Buffer.from(wedding))
     .composite([
       {
         input: await sharp(Buffer.from(await getAvatar(bride, 80)))
-          .resize(80)
           .composite([
             {
               input: Buffer.from('<svg><rect x="0" y="0" width="80" height="80" rx="50" ry="50"/></svg>'),
@@ -39,7 +40,6 @@ export const command = async (i: any) => {
       },
       {
         input: await sharp(Buffer.from(await getAvatar(groom, 80)))
-          .resize(80)
           .composite([
             {
               input: Buffer.from('<svg><rect x="0" y="0" width="80" height="80" rx="50" ry="50"/></svg>'),
