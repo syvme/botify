@@ -1,5 +1,5 @@
 import { verifyKey } from 'discord-interactions'
-import { image } from '@/lib/image'
+import image from '@/lib/image'
 import { get } from '@vercel/edge-config'
 import * as marry from './commands/marry'
 import * as promotion from './commands/promotion'
