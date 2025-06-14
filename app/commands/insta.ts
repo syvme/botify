@@ -20,17 +20,12 @@ export const command = async (i: any) => {
   const link = i.data.options[0].value
 
   setImmediate(async () => {
-    const result = await instagramGetUrl(link)
-    if (!result) return await i.reply({ content: 'There was an error, probably an invalid link.' })
+    const result = await instagramGetUrl(link).catch(() => i.reply({ content: 'Provided link is invalid.' }))
     const media = result.media_details
-
-    if (!media || media.length < 1) {
-      console.error(result)
-      return await i.reply({ content: 'There was an unexpected error.' })
-    }
+    if (!media) return
 
     const files = await Promise.all(
-      media.slice(0, 10).map(async (item) => {
+      media.slice(0, 10).map(async (item: any) => {
         const res = await fetch(item.url)
         return {
           buffer: Buffer.from(await res.arrayBuffer()),
