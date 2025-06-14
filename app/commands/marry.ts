@@ -1,6 +1,6 @@
-import sharp from 'sharp'
 import getAvatar from '@/lib/getAvatar'
 import image from '@/lib/image'
+import sharp from 'sharp'
 
 export const data = {
   name: 'marry',
