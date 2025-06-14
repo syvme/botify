@@ -19,8 +19,8 @@ export const data = {
 export const command = async (i: any) => {
   const link = i.data.options[0].value
 
-  setImmediate(async () => {
-    const result = await instagramGetUrl(link).catch(() => i.reply({ content: 'Provided link is invalid.' }))
+  try {
+    const result = await instagramGetUrl(link)
     const media = result.media_details
     if (!media) return
 
@@ -45,7 +45,9 @@ export const command = async (i: any) => {
     })
 
     return await i.reply(formData.getBuffer(), formData.getHeaders())
-  })
+  } catch {
+    await i.reply({ content: 'Provided link is invalid.' })
+  }
 
   return { type: 5 }
 }
