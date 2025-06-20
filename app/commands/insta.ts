@@ -35,7 +35,6 @@ export const command = async (i: any) => {
     )
 
     const attachments = files.filter((file) => !file.isLarge).map(({ data, name }) => ({ data, name }))
-    console.log(attachments)
     return attachments.length === 0
       ? await i.reply({
           content: files
@@ -43,7 +42,7 @@ export const command = async (i: any) => {
             .map((file) => `[${result.post_info.caption || result.post_info.owner_username}](${file.url})`)
             .join('\n'),
         })
-      : await i.reply({ attachments })
+      : await i.reply({ files: attachments })
   })
 
   return { type: 5 }

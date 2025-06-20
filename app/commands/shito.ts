@@ -1,4 +1,5 @@
 import getAvatar from '@/lib/getAvatar'
+import { after } from 'next/server'
 import sharp from 'sharp'
 
 export const data = {
@@ -38,5 +39,6 @@ export const command = async (i: any) => {
     ])
     .toBuffer()
 
-  return await i.reply({ files: [{ data: finalImage, name: `SPOILER_shito-${user.id}.png` }] })
+  after(() => i.reply({ files: [{ data: finalImage, name: `SPOILER_shito-${user.id}.png` }] }))
+  return { type: 5 }
 }
