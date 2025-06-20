@@ -1,10 +1,11 @@
-import image from '@/lib/image'
 import { get } from '@vercel/edge-config'
 import { verifyKey } from 'discord-interactions'
+import FormData from 'form-data'
 import * as insta from './commands/insta'
 import * as marry from './commands/marry'
 import * as promotion from './commands/promotion'
 import * as shito from './commands/shito'
+import { after } from 'next/server'
 
 const commands = [insta, marry, promotion, shito]
 
@@ -17,22 +18,38 @@ export const POST = async (req: Request) => {
   const config = (await get('botify')) as { [key: string]: any }
   const i = JSON.parse(body)
 
-  if (i.type === 2)
-    i.reply = async (content: string, headers?: HeadersInit) => {
-      const mergedHeaders = { 'content-type': 'application/json', ...headers }
+  if (i.type === 2) {
+    i.reply = async (content: string | { files: { data: Buffer | ArrayBuffer; name: string }[]; data?: any }, headers?: HeadersInit) => {
+      const isImage = typeof content === 'object' && content.files && Array.isArray(content.files)
+      if (!isImage && content.constructor !== Object) return new Error('Invalid Content Type')
+      const formData = new FormData()
+
+      if (isImage) {
+        formData.append('payload_json', JSON.stringify({ type: 4, data: content.data }))
+        content.files.forEach((image, idx: number) => {
+          const extMatch = image.name?.match(/\.(\w+)$/)
+          formData.append(`files[${idx}]`, Buffer.isBuffer(image.data) ? image.data : Buffer.from(image.data), {
+            filename: image.name || `image-${idx}.png`,
+            contentType: `image/${extMatch ? extMatch[1] : 'png'}`,
+          })
+        })
+      }
+
+      const initHeaders = isImage ? { ...formData.getHeaders(), ...headers } : { 'content-type': 'application/json', ...headers }
       return await fetch(`https://discord.com/api/v10/webhooks/${i.application_id}/${i.token}`, {
         method: 'POST',
-        headers: { Authorization: `Bot ${process.env.DISCORD_TOKEN}`, ...mergedHeaders },
-        body: content.constructor === Object ? JSON.stringify(content) : content,
+        headers: { Authorization: `Bot ${process.env.DISCORD_TOKEN}`, ...initHeaders },
+        body: isImage ? formData.getBuffer() : JSON.stringify(content),
       }).then((r) => r.json())
     }
 
-  if (i.type === 1) return Response.json({ type: 1 })
-  if (i.type === 2 && !config.checkpoint.includes(i.user?.id || i.member.user.id)) {
-    await image(i, await (await fetch(`${process.env.BASE_URL}/8mn8l3.png`)).arrayBuffer(), '8mn8l3.png', { flags: 64 })
-    return new Response(null, { status: 204 })
+    if (!config.checkpoint.includes(i.user?.id || i.member.user.id)) {
+      after(async () => i.reply({ files: [{ data: await (await fetch(`${process.env.BASE_URL}/8mn8l3.png`)).arrayBuffer(), name: '8mn8l3.png' }] }))
+      return Response.json({ type: 5, data: { flags: 1 << 6 } })
+    }
   }
 
+  if (i.type === 1) return Response.json({ type: 1 })
   const response = await (commands as any)
     .filter(
       (command: any) =>
