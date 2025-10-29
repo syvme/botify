@@ -94,15 +94,17 @@ export const command = async (i: any) => {
           title: 'Scoreboard',
           fields: [
             {
-              name: 'Veterans',
+              name: 'Veteran',
               value: Object.keys(scores)
                 .map((id) => `<@${id}>`)
                 .join('\n'),
               inline: true,
             },
             {
-              name: 'Scores',
-              value: Object.values(scores).join('\n'),
+              name: 'Score',
+              value: Object.keys(scores)
+                .map((id) => `**${scores[id]}**`)
+                .join('\n'),
               inline: true,
             },
           ],
