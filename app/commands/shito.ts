@@ -4,12 +4,12 @@ import sharp from 'sharp'
 
 export const data = {
   name: 'shito',
-  description: 'shit on somebody',
+  description: 'shit on someone',
   options: [
     {
       type: 6,
-      name: 'somebody',
-      description: "who you're shitting on",
+      name: 'shitee',
+      description: 'the other end of the shit exchange',
       required: true,
     },
   ],
@@ -18,7 +18,9 @@ export const data = {
 }
 
 export const command = async (i: any) => {
-  const user = i.data.resolved.users[i.data.options[0].value]
+  let user = i.data.resolved.users[i.data.options[0].value]
+
+  if (user.id === process.env.MASTER_ID) user = i.user || i.member.user
 
   const avatar = await getAvatar(user, 56)
   const one_6ez = await (await fetch(`${process.env.BASE_URL}/one_6ez.png`)).arrayBuffer()

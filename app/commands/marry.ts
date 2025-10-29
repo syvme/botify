@@ -1,10 +1,10 @@
 import getAvatar from '@/lib/getAvatar'
-import { after } from 'next/server'
+import { waitUntil } from '@vercel/functions'
 import sharp from 'sharp'
 
 export const data = {
   name: 'marry',
-  description: 'marry somebody',
+  description: 'marry someone that deserves it',
   options: [
     {
       type: 6,
@@ -18,41 +18,51 @@ export const data = {
 }
 
 export const command = async (i: any) => {
-  const groom = i.user || i.member.user
-  const bride = i.data.resolved.users[i.data.options[0].value]
+  let groom = i.user || i.member.user
+  let bride = i.data.resolved.users[i.data.options[0].value]
 
-  if (groom.id === bride.id) return { type: 4, data: { content: "You can't marry yourself.", flags: 64 } }
-  const wedding = await (await fetch(`${process.env.BASE_URL}/wedding.png`)).arrayBuffer()
+  if (groom.id === bride.id) return { type: 4, data: { content: "You can't marry yourself, Narcissist.", flags: 64 } }
+  if (bride.id === process.env.MASTER_ID) {
+    const tempGroom = groom
+    groom = bride
+    bride = tempGroom
+  }
 
-  const finalImage = await sharp(Buffer.from(wedding))
-    .composite([
-      {
-        input: await sharp(Buffer.from(await getAvatar(bride, 80)))
-          .composite([
-            {
-              input: Buffer.from('<svg><rect x="0" y="0" width="80" height="80" rx="50" ry="50"/></svg>'),
-              blend: 'dest-in',
-            },
-          ])
-          .toBuffer(),
-        top: 45,
-        left: 230,
-      },
-      {
-        input: await sharp(Buffer.from(await getAvatar(groom, 80)))
-          .composite([
-            {
-              input: Buffer.from('<svg><rect x="0" y="0" width="80" height="80" rx="50" ry="50"/></svg>'),
-              blend: 'dest-in',
-            },
-          ])
-          .toBuffer(),
-        top: 35,
-        left: 325,
-      },
-    ])
-    .toBuffer()
+  const deferred = async () => {
+    const wedding = await (await fetch(`${process.env.BASE_URL}/wedding.png`)).arrayBuffer()
 
-  after(() => i.reply({ files: [{ data: finalImage, name: `WEDDING-${groom.id}.png` }] }))
+    const finalImage = await sharp(Buffer.from(wedding))
+      .composite([
+        {
+          input: await sharp(Buffer.from(await getAvatar(bride, 80)))
+            .composite([
+              {
+                input: Buffer.from('<svg><rect x="0" y="0" width="80" height="80" rx="50" ry="50"/></svg>'),
+                blend: 'dest-in',
+              },
+            ])
+            .toBuffer(),
+          top: 45,
+          left: 230,
+        },
+        {
+          input: await sharp(Buffer.from(await getAvatar(groom, 80)))
+            .composite([
+              {
+                input: Buffer.from('<svg><rect x="0" y="0" width="80" height="80" rx="50" ry="50"/></svg>'),
+                blend: 'dest-in',
+              },
+            ])
+            .toBuffer(),
+          top: 35,
+          left: 325,
+        },
+      ])
+      .toBuffer()
+
+    return await i.reply({ files: [{ data: finalImage, name: `WEDDING-${groom.id}.png` }] })
+  }
+
+  waitUntil(deferred())
   return { type: 5 }
 }

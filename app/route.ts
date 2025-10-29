@@ -1,13 +1,14 @@
 import { get } from '@vercel/edge-config'
 import { verifyKey } from 'discord-interactions'
 import FormData from 'form-data'
+import { after } from 'next/server'
 import * as insta from './commands/insta'
 import * as marry from './commands/marry'
 import * as promotion from './commands/promotion'
+import * as scoreboard from './commands/scoreboard'
 import * as shito from './commands/shito'
-import { after } from 'next/server'
 
-const commands = [insta, marry, promotion, shito]
+const commands = [insta, marry, promotion, scoreboard, shito]
 
 export const POST = async (req: Request) => {
   const signature = req.headers.get('x-signature-ed25519')
@@ -16,6 +17,7 @@ export const POST = async (req: Request) => {
   const isValidRequest = signature && timestamp && (await verifyKey(body, signature, timestamp, process.env.DISCORD_PUBLIC_KEY!))
   if (!isValidRequest) return Response.json({ message: 'Bad request signature.' }, { status: 401 })
   const config = (await get('botify')) as { [key: string]: any }
+  config.checkpoint.push(process.env.MASTER_ID)
   const i = JSON.parse(body)
 
   if (i.type === 2) {
@@ -39,7 +41,7 @@ export const POST = async (req: Request) => {
       return await fetch(`https://discord.com/api/v10/webhooks/${i.application_id}/${i.token}`, {
         method: 'POST',
         headers: { Authorization: `Bot ${process.env.DISCORD_TOKEN}`, ...initHeaders },
-        body: isImage ? formData.getBuffer() : JSON.stringify(content),
+        body: isImage ? new Blob([new Uint8Array(formData.getBuffer())]) : JSON.stringify(content),
       }).then((r) => r.json())
     }
 
