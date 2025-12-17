@@ -2,13 +2,14 @@ import { get } from '@vercel/edge-config'
 import { verifyKey } from 'discord-interactions'
 import FormData from 'form-data'
 import { after } from 'next/server'
+import * as heartrate from './commands/heartrate'
 import * as insta from './commands/insta'
 import * as marry from './commands/marry'
 import * as promotion from './commands/promotion'
 import * as scoreboard from './commands/scoreboard'
 import * as shito from './commands/shito'
 
-const commands = [insta, marry, promotion, scoreboard, shito]
+const commands = [heartrate, insta, marry, promotion, scoreboard, shito]
 
 export const POST = async (req: Request) => {
   const signature = req.headers.get('x-signature-ed25519')
