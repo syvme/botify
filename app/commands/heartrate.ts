@@ -11,5 +11,13 @@ export const command = async () => {
     headers: { Authorization: `Bearer ${process.env.PULSOID_TOKEN}` },
   }).then((r) => r.json())
 
-  return { type: 4, data: { content: `syvme's heartrate is at ${res.data.heart_rate} bpm` } }
+  return {
+    type: 4,
+    data: {
+      content:
+        Date.now() - res.measured_at > 10 * 1000
+          ? "syvme isn't wearing his heartrate monitor"
+          : `syvme's heartrate is at ${res.data.heart_rate} bpm`,
+    },
+  }
 }

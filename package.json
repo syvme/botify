@@ -1,6 +1,6 @@
 {
   "name": "botify",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,22 +10,21 @@
   },
   "dependencies": {
     "@vercel/edge-config": "^1.4.3",
-    "@vercel/functions": "^2.2.13",
+    "@vercel/functions": "^3.3.4",
     "discord-interactions": "^4.4.0",
-    "form-data": "^4.0.4",
-    "instagram-url-direct": "^2.0.7",
-    "next": "15.2.4",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "sharp": "^0.34.4"
+    "form-data": "^4.0.5",
+    "next": "16.1.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
-    "@types/node": "^20.19.24",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "eslint": "^9.38.0",
-    "eslint-config-next": "15.2.4",
+    "@eslint/eslintrc": "^3.3.3",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "16.1.0",
     "typescript": "^5.9.3"
   }
 }
