@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         destination: 'https://syvme.com/terms',
         permanent: true,
       })),
-      ...['privacy', '/legal/privacy', '/legal/privacypolicy', '/privacypolicy'].map((source) => ({
+      ...['/privacy', '/legal/privacy', '/legal/privacypolicy', '/privacypolicy'].map((source) => ({
         source,
         destination: 'https://syvme.com/privacy',
         permanent: true,
